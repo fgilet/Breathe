@@ -1,11 +1,21 @@
 package com.example.breathe;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
@@ -33,6 +43,11 @@ import java.util.logging.Logger;
 public class MainActivity extends AppCompatActivity {
 
     private RequestQueue queue;
+    AutoCompleteTextView field;
+    Button button;
+    TextView city;
+    TextView quality;
+    TextView advice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,50 +57,53 @@ public class MainActivity extends AppCompatActivity {
         queue = Volley.newRequestQueue(this);
         queue.start();
 
-        EditText field = findViewById(R.id.edit_text);
-        Button button = findViewById(R.id.button);
-        TextView city = findViewById(R.id.city);
-        TextView quality = findViewById(R.id.quality);
-        TextView advice = findViewById(R.id.advice);
+        AutoCompleteTextView field = findViewById(R.id.field);
+        button = findViewById(R.id.button);
+        city = findViewById(R.id.city);
+        quality = findViewById(R.id.quality);
+        advice = findViewById(R.id.advice);
 
-        ArrayList<String> cities = new ArrayList<>();
+        ArrayList<String> cities = (ArrayList<String>) getIntent().getSerializableExtra("cities");
 
-        MyJsonArrayRequest requestListOfCities = new MyJsonArrayRequest
-                (Request.Method.GET, "https://api.aircheckr.com/v1.5/territory/BE/names", null, new Response.Listener() {
-                    @Override
-                    public void onResponse(Object response) {
-                        JSONArray array = (JSONArray) response;
-                        for (int i = 0; i < array.length(); i++) {
-                            try {
-                                JSONArray array2 = array.getJSONObject(i).getJSONArray("name");
-                                for (int j = 0; j < array2.length(); j++) {
-                                    cities.add(array2.get(j).toString());
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        System.out.println(cities);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        System.out.println("ERROR RESPONSE !!!");
-                        error.printStackTrace();
-                    }
-                });
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, cities);
+        field.setAdapter(adapter);
 
-        /*
+        button.setOnClickListener(view -> {
+            String c = field.getText().toString();
+            if(cities.contains(c)) {
+                getQuality(c);
+            } else {
+                city.setText("");
+                quality.setText("");
+                advice.setText("");
+                Toast.makeText(MainActivity.this,"Please select a city from the drop down list.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getQuality(String c) {
+
+        String url = "https://api.aircheckr.com/v1.5/territory/BE/LAU2/name/" + c;
+        System.out.println(url);
+
         MyJsonObjectRequest request = new MyJsonObjectRequest
-                (Request.Method.GET, "https://api.aircheckr.com/v1.5/territory/BE/LAU2/name/Leuven", null, new Response.Listener<JSONObject>() {
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        System.out.println("RESPONSE RECEIVED !!!");
-                        resp[0] = response;
-                        System.out.println(response.names().toString());
                         try {
-                            System.out.println(response.get("success"));
+                            city.setText("City : " + c);
+                            quality.setText("Quality : " + response.getJSONArray("data").getJSONObject(0).getJSONObject("aqi_11").getString("name"));
+                            String color = response.getJSONArray("data").getJSONObject(0).getJSONObject("aqi_11").getString("color_hex");
+                            Drawable unwrappedDrawable = AppCompatResources.getDrawable(MainActivity.this.getBaseContext(), R.drawable.square);
+                            Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
+                            DrawableCompat.setTint(wrappedDrawable, Color.parseColor(color));
+                            advice.setText("Advice : " + response.getJSONArray("data").getJSONObject(0).getJSONObject("recommend_non_sensitive").getString("general"));
+                            View view = MainActivity.this.getCurrentFocus();
+                            if (view != null) {
+                                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -94,14 +112,14 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        System.out.println("ERROR RESPONSE !!!");
+                        city.setText("");
+                        quality.setText("");
+                        advice.setText("");
+                        Toast.makeText(MainActivity.this,"Please check your internet connection and try again.", Toast.LENGTH_LONG).show();
                         error.printStackTrace();
                     }
                 });
-                */
 
-
-        queue.add(requestListOfCities);
-
+        queue.add(request);
     }
 }
