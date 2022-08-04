@@ -20,12 +20,15 @@ import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,10 +48,36 @@ public class MainActivity extends AppCompatActivity {
         TextView quality = findViewById(R.id.quality);
         TextView advice = findViewById(R.id.advice);
 
-        final JSONObject[] resp = new JSONObject[1];
+        ArrayList<String> cities = new ArrayList<>();
 
+        MyJsonArrayRequest requestListOfCities = new MyJsonArrayRequest
+                (Request.Method.GET, "https://api.aircheckr.com/v1.5/territory/BE/names", null, new Response.Listener() {
+                    @Override
+                    public void onResponse(Object response) {
+                        JSONArray array = (JSONArray) response;
+                        for (int i = 0; i < array.length(); i++) {
+                            try {
+                                JSONArray array2 = array.getJSONObject(i).getJSONArray("name");
+                                for (int j = 0; j < array2.length(); j++) {
+                                    cities.add(array2.get(j).toString());
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        System.out.println(cities);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println("ERROR RESPONSE !!!");
+                        error.printStackTrace();
+                    }
+                });
+
+        /*
         MyJsonObjectRequest request = new MyJsonObjectRequest
-                (Request.Method.GET, "https://api.aircheckr.com/territory/BE/LAU2/names", null, new Response.Listener<JSONObject>() {
+                (Request.Method.GET, "https://api.aircheckr.com/v1.5/territory/BE/LAU2/name/Leuven", null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
@@ -65,45 +94,14 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-
+                        System.out.println("ERROR RESPONSE !!!");
+                        error.printStackTrace();
                     }
                 });
+                */
 
-        queue.add(request);
+
+        queue.add(requestListOfCities);
 
     }
-
-    /*
-    private String[] getListOfCities() {
-
-        final String[][] listOfCities = new String[1][1];
-
-        System.out.println("here2");
-
-        MyJsonObjectRequest request = new MyJsonObjectRequest
-                (Request.Method.GET, "https://api.aircheckr.com/territory/countries", null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        System.out.println("here3");
-                        try {
-                            listOfCities[0] = (String[]) response.get("data");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-
-                    }
-                });
-
-        queue.add(request);
-
-        return listOfCities[0];
-    }*/
 }
