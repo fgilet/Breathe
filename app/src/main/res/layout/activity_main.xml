@@ -2,49 +2,60 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:layout_margin="50dp"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@color/theme"
+    android:id="@+id/margins">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_margin="50dp"
+        android:orientation="vertical"
+        android:background="@color/white">
 
 
-    <AutoCompleteTextView
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="50dp"
-        android:hint="Entrez le nom d'une ville..."
-        android:id="@+id/field"/>
+        <AutoCompleteTextView
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="50dp"
+            android:hint="@string/hint"
+            android:id="@+id/field"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="50dp"
-        android:layout_gravity="center"
-        android:text="Rechercher"
-        android:id="@+id/button"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="20dp"
-        android:textSize="20sp"
-        android:id="@+id/city" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="50dp"
+            android:layout_gravity="center"
+            android:text="@string/search"
+            android:id="@+id/button"/>
 
-    <include
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="20dp"
-        android:textSize="20sp"
-        layout="@layout/quality" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="20dp"
+            android:textSize="20sp"
+            android:id="@+id/city" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="5"
-        android:textSize="20sp"
-        android:id="@+id/advice" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="20dp"
+            android:textSize="20sp"
+            android:id="@+id/quality" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="5"
+            android:textSize="20sp"
+            android:id="@+id/advice" />
+
+    </LinearLayout>
 
 </LinearLayout>

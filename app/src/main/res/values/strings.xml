@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Breathe</string>
+    <string name="loading">Loading...</string>
+    <string name="check_connection">Please check your internet connection ! <u>Click here to try again.</u></string>
+    <string name="hint">Search a city...</string>
+    <string name="search">Search</string>
+    <string name="toast_dropdown">Please select a city from the drop down list.</string>
+    <string name="toast_connection">Please check your internet connection and try again.</string>
+    <string name="city">City : %1$s</string>
+    <string name="quality">Quality : %1$s</string>
+    <string name="advice">Advice : %1$s</string>
 </resources>
