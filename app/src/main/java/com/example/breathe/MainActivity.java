@@ -1,57 +1,51 @@
 package com.example.breathe;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Cache;
-import com.android.volley.Network;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.BasicNetwork;
-import com.android.volley.toolbox.DiskBasedCache;
-import com.android.volley.toolbox.HurlStack;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity {
 
     // instantiating network requests queue and visual objects
     private RequestQueue queue;
     AutoCompleteTextView field;
-    Button button;
+    Button search;
+    Button favorites;
     TextView city;
     TextView quality;
     TextView advice;
-    View margins;
+    ImageView star;
+    View shape;
+    DataAccessObject DAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,13 +56,17 @@ public class MainActivity extends AppCompatActivity {
         queue = Volley.newRequestQueue(this);
         queue.start();
 
+        DAO = DataAccessObject.getInstance(getApplicationContext());
+
         // linking java visual objects to XML components
         field = findViewById(R.id.field);
-        button = findViewById(R.id.button);
+        star = findViewById(R.id.star_button);
+        search = findViewById(R.id.button_search);
+        favorites = findViewById(R.id.button_favorites);
         city = findViewById(R.id.city);
         quality = findViewById(R.id.quality);
         advice = findViewById(R.id.advice);
-        margins = findViewById(R.id.margins);
+        shape = findViewById(R.id.quality_shape);
 
         // retrieving list of cities from loading activity
         ArrayList<String> cities = (ArrayList<String>) getIntent().getSerializableExtra("cities");
@@ -77,23 +75,78 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, cities);
         field.setAdapter(adapter);
 
-        //setting search button behavior
-        button.setOnClickListener(view -> {
+        // making the star icon go empty when the user changes the input
+        // this way the star is only filled after the user clicked on the search button for a favorite city
+        // the star goes back to empty when the user stars deleting the name of the city, hinting that clicking it will not do anything until another city is selected from the drop down list
+        field.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                star.setImageResource(R.mipmap.star_empty);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        // setting search button behavior
+        search.setOnClickListener(view -> {
             // retrieving selected city
             String c = field.getText().toString();
             // if the name is in the list of available cities
             if(cities.contains(c)) {
                 // retrieve information and update screen
                 getQuality(c);
+                // update star icon
+                DAO.open();
+                if(DAO.isFavorite(c)) {
+                    star.setImageResource(R.mipmap.star_filled);
+                } else {
+                    star.setImageResource(R.mipmap.star_empty);
+                }
+                DAO.close();
             } else { // if the name is not in the list
                 // clearing info from potential previous search
                 city.setText("");
                 quality.setText("");
                 advice.setText("");
-                margins.setBackgroundColor(getResources().getColor(R.color.theme));
+                shape.setVisibility(View.INVISIBLE);
+                DAO.open();
+                star.setImageResource(R.mipmap.star_empty);
+                DAO.close();
                 // showing toast message to warn user
                 Toast.makeText(MainActivity.this,R.string.toast_dropdown, Toast.LENGTH_LONG).show();
             }
+        });
+
+        star.setOnClickListener(view -> {
+            // retrieving selected city
+            String c = field.getText().toString();
+            // if the name is in the list of available cities
+            if(cities.contains(c)) {
+                DAO.open();
+                if(DAO.isFavorite(c)) {
+                    DAO.deleteFavorite(c);
+                    star.setImageResource(R.mipmap.star_empty);
+                } else {
+                    DAO.addFavorite(c);
+                    star.setImageResource(R.mipmap.star_filled);
+                }
+                System.out.println(Arrays.toString(DAO.getFavorites()));
+                DAO.close();
+            }
+        });
+
+        // setting favorites button behavior
+        favorites.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -119,7 +172,8 @@ public class MainActivity extends AppCompatActivity {
                             advice.setText(getString(R.string.advice, response.getJSONArray("data").getJSONObject(0).getJSONObject("recommend_non_sensitive").getString("general")));
                             // retrieving color code and updating the colored frame with it
                             String color = response.getJSONArray("data").getJSONObject(0).getJSONObject("aqi_11").getString("color_hex");
-                            margins.setBackgroundColor(Color.parseColor(color));
+                            shape.setVisibility(View.VISIBLE);
+                            setShapeColor(color);
                             // closing the keyboard to enhance readability of results
                             View view = MainActivity.this.getCurrentFocus();
                             if (view != null) {
@@ -138,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                         city.setText("");
                         quality.setText("");
                         advice.setText("");
-                        margins.setBackgroundColor(getResources().getColor(R.color.theme));
+                        shape.setVisibility(View.INVISIBLE);
                         // showing toast message to warn user of the network issue
                         Toast.makeText(MainActivity.this,R.string.toast_connection, Toast.LENGTH_LONG).show();
                         error.printStackTrace();
@@ -147,5 +201,19 @@ public class MainActivity extends AppCompatActivity {
 
         // sending the request
         queue.add(request);
+    }
+
+    private void setShapeColor(String color) {
+        System.out.println("setting color to : " + color);
+        System.out.println(shape.getVisibility());
+        Drawable background = shape.getBackground();
+        System.out.println(background.getClass());
+        if (background instanceof ShapeDrawable) {
+            ((ShapeDrawable)background).getPaint().setColor(Color.parseColor(color));
+        } else if (background instanceof GradientDrawable) {
+            ((GradientDrawable)background).setColor(Color.parseColor(color));
+        } else if (background instanceof ColorDrawable) {
+            ((ColorDrawable)background).setColor(Color.parseColor(color));
+        }
     }
 }

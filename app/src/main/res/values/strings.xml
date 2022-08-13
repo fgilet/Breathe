@@ -4,9 +4,13 @@
     <string name="check_connection">Please check your internet connection ! <u>Click here to try again.</u></string>
     <string name="hint">Search a city...</string>
     <string name="search">Search</string>
+    <string name="favorites">Favorites</string>
     <string name="toast_dropdown">Please select a city from the drop down list.</string>
     <string name="toast_connection">Please check your internet connection and try again.</string>
-    <string name="city">City : %1$s</string>
-    <string name="quality">Quality : %1$s</string>
-    <string name="advice">Advice : %1$s</string>
+    <string name="city"><u><b>City :</b></u> %1$s</string>
+    <string name="quality"><u><b>Quality :</b></u> %1$s</string>
+    <string name="advice"><u><b>Advice :</b></u> %1$s</string>
+    <string name="city_favorites"><u><b>City</b></u></string>
+    <string name="quality_favorites"><u><b>Quality</b></u></string>
+    <string name="star_favorites"><u><b>Favorite</b></u></string>
 </resources>

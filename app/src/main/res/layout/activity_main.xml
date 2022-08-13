@@ -3,59 +3,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/theme"
+    android:layout_margin="20dp"
     android:id="@+id/margins">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:layout_margin="50dp"
-        android:orientation="vertical"
-        android:background="@color/white">
 
-
-        <AutoCompleteTextView
-            android:layout_width="fill_parent"
+        <include
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginBottom="50dp"
-            android:hint="@string/hint"
-            android:id="@+id/field"/>
+            android:layout_marginVertical="20dp"
+            layout="@layout/input_bar"
+            />
 
-        <Button
-            android:layout_width="wrap_content"
+        <include
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginBottom="50dp"
-            android:layout_gravity="center"
-            android:text="@string/search"
-            android:id="@+id/button"/>
+            android:layout_marginBottom="20dp"
+            layout="@layout/button_bar"
+            />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_marginBottom="20dp"
             android:textSize="20sp"
             android:id="@+id/city" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <include
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_marginBottom="20dp"
-            android:textSize="20sp"
-            android:id="@+id/quality" />
+            layout="@layout/quality_bar"
+            />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="5"
+            android:layout_weight="8"
             android:textSize="20sp"
             android:id="@+id/advice" />
-
-    </LinearLayout>
 
 </LinearLayout>
