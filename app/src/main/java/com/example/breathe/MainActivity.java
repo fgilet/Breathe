@@ -86,7 +86,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                star.setImageResource(R.mipmap.star_empty);
+                String input = charSequence.toString();
+                DAO.open();
+                if(DAO.isFavorite(input)) {
+                    star.setImageResource(R.mipmap.star_filled);
+                } else {
+                    star.setImageResource(R.mipmap.star_empty);
+                }
+                DAO.close();
             }
 
             @Override
@@ -138,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
                     DAO.addFavorite(c);
                     star.setImageResource(R.mipmap.star_filled);
                 }
-                System.out.println(Arrays.toString(DAO.getFavorites()));
                 DAO.close();
             }
         });
