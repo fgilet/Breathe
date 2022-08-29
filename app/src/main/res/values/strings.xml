@@ -10,7 +10,13 @@
     <string name="city"><u><b>City :</b></u> %1$s</string>
     <string name="quality"><u><b>Quality :</b></u> %1$s</string>
     <string name="advice"><u><b>Advice :</b></u> %1$s</string>
-    <string name="city_favorites"><u><b>City</b></u></string>
-    <string name="quality_favorites"><u><b>Quality</b></u></string>
-    <string name="star_favorites"><u><b>Favorite</b></u></string>
+    <string name="city_favorites"><u><b>City:</b></u> </string>
+    <string name="quality_favorites"><u><b>Quality:</b></u> </string>
+    <string name="favorite"><u><b>Favorite :</b></u></string>
+    <string name="forecast_city"><b><u>Forecasts for : %1$s</u></b></string>
+    <string name="forecasts">Forecasts</string>
+    <string name="forecast_u"><b><u>Forecast :</u></b></string>
+    <string name="today"><b><u>Today</u></b></string>
+    <string name="tomorrow"><b><u>Tomorrow</u></b></string>
+
 </resources>

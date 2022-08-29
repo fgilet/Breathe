@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     AutoCompleteTextView field;
     Button search;
     Button favorites;
+    Button forecasts;
     TextView city;
     TextView quality;
     TextView advice;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         star = findViewById(R.id.star_button);
         search = findViewById(R.id.button_search);
         favorites = findViewById(R.id.button_favorites);
+        forecasts = findViewById(R.id.button_forecast);
         city = findViewById(R.id.city);
         quality = findViewById(R.id.quality);
         advice = findViewById(R.id.advice);
@@ -153,6 +155,15 @@ public class MainActivity extends AppCompatActivity {
         favorites.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
             startActivity(intent);
+        });
+
+        forecasts.setOnClickListener(view -> {
+            String c = field.getText().toString();
+            if (cities.contains(c)) {
+                Intent intent = new Intent(MainActivity.this, ForecastActivity.class);
+                intent.putExtra("city", c);
+                startActivity(intent);
+            }
         });
     }
 

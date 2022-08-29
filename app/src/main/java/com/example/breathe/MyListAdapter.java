@@ -1,6 +1,7 @@
 package com.example.breathe;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -62,6 +63,7 @@ public class MyListAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.city = view.findViewById(R.id.favorite_city);
             holder.quality = view.findViewById(R.id.favorite_quality);
+            holder.forecasts = view.findViewById(R.id.favorite_forecasts);
             holder.star = view.findViewById(R.id.favorite_star);
             view.setTag(holder);
         } else {
@@ -123,12 +125,19 @@ public class MyListAdapter extends BaseAdapter {
             }
         });
 
+        holder.forecasts.setOnClickListener(view1 -> {
+            Intent intent = new Intent(context, ForecastActivity.class);
+            intent.putExtra("city", city);
+            context.startActivity(intent);
+        });
+
         return view;
     }
 
     static class ViewHolder {
         TextView city;
         TextView quality;
+        ImageView forecasts;
         ImageView star;
     }
 }
